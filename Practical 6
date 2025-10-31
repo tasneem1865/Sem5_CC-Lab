@@ -1,0 +1,16 @@
+%{
+#include <stdio.h>
+int l_no = 0;
+%}
+%%
+.*com\n    { printf("Line ends with 'com'\n");
+             l_no++;
+             printf("line %d ended with com %s",l_no,yytext);}
+.*\n       { printf("Line does not end with 'com'\n");
+             l_no++;}
+%%
+int yywrap(){return 1;}
+int main() {
+    yylex();
+    return 0;
+}
