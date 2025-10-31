@@ -1,0 +1,52 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+int yylex(void);
+void yyerror(const char *s);
+
+int stack[100];
+int top = -1;
+
+void push(int n) {
+    if (top == 99) {
+        fprintf(stderr, "Stack overflow\n");
+        exit(1);
+    }
+    stack[++top] = n;
+}
+
+int pop() {
+    if (top < 0) {
+        fprintf(stderr, "Stack underflow\n");
+        exit(1);
+    }
+    return stack[top--];
+}
+%}
+
+%token NUMBER PLUS MINUS MULT DIV
+
+%%
+input:
+    expr '\n'   { printf("Result = %d\n", pop()); }
+;
+
+expr:
+      expr expr PLUS  { int b = pop(); int a = pop(); push(a + b); }
+    | expr expr MINUS { int b = pop(); int a = pop(); push(a - b); }
+    | expr expr MULT  { int b = pop(); int a = pop(); push(a * b); }
+    | expr expr DIV   { int b = pop(); int a = pop(); push(a / b); }
+    | NUMBER          { push($1); }
+;
+%%
+
+void yyerror(const char *s) {
+    fprintf(stderr, "Error: %s\n", s);
+}
+
+int main() {
+    printf("Enter a postfix expression:\n");
+    yyparse();
+    return 0;
+}
