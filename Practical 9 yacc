@@ -1,0 +1,59 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+int yylex(void);
+void yyerror(const char *s);
+%}
+
+%token FOR LPAREN RPAREN LBRACE RBRACE SEMI
+%token ASSIGN LT GT PLUS MINUS PLUSPLUS MINUSMINUS
+%token ID NUMBER
+
+%%
+program:
+    FOR LPAREN init SEMI cond SEMI inc RPAREN block
+        { printf("Correct 'for' loop format!\n"); }
+;
+
+init:
+    ID ASSIGN NUMBER
+;
+
+cond:
+      ID LT NUMBER
+    | ID GT NUMBER
+;
+
+inc:
+      ID PLUSPLUS
+    | ID MINUSMINUS
+    | ID ASSIGN ID PLUS NUMBER
+    | ID ASSIGN ID MINUS NUMBER
+;
+
+block:
+    LBRACE stmt_list RBRACE
+;
+
+stmt_list:
+      /* empty */
+    | stmt_list statement
+;
+
+statement:
+      ID ASSIGN ID PLUS NUMBER SEMI
+    | ID ASSIGN ID MINUS NUMBER SEMI
+    | ID ASSIGN NUMBER SEMI
+;
+%%
+
+void yyerror(const char *s) {
+    fprintf(stderr, "Syntax error: %s\n", s);
+}
+
+int main(void) {
+    printf("Enter a for loop:\n");
+    yyparse();
+    return 0;
+}
