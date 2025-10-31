@@ -1,0 +1,16 @@
+%{
+#include <stdio.h>
+int count = 0;
+%}
+
+%%
+[Aa][a-zA-Z]*    { count++; }
+[a-zA-Z]+      
+[ \t\n]+        
+.              
+%%
+int main() {
+    yylex();
+    printf("%d\n", count);
+    return 0;
+}
